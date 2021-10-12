@@ -11,6 +11,7 @@ import PassKit
 @objc(ApplePayGooglePay) class ApplePayGooglePay : CDVPlugin, PKPaymentAuthorizationViewControllerDelegate {
     var paymentCallbackId : String?
     var successfulPayment = false
+    var applePaymentStringResult : String?
     
     /**
      * Check device for ApplePay capability
@@ -84,17 +85,20 @@ import PassKit
         completion(PKPaymentAuthorizationResult(status: PKPaymentAuthorizationStatus.success, errors: nil))
         successfulPayment = true
         let applePaymentString = String(data: payment.token.paymentData, encoding: .utf8)
-        let result = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: applePaymentString)
-        
-        commandDelegate.send(result, callbackId: paymentCallbackId)
+        applePaymentStringResult = applePaymentString
     }
     
     func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
         if !successfulPayment {
-            let result = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Payment cancelled")
+            let result = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Payment cancelledGamma")
             commandDelegate.send(result, callbackId: paymentCallbackId)
         }
-            
+
+        if successfulPayment {
+            let result = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: applePaymentStringResult)
+            commandDelegate.send(result, callbackId: paymentCallbackId)
+        }
+
         controller.dismiss(animated: true, completion: nil)
     }
 }
