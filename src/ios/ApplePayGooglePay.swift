@@ -90,7 +90,7 @@ import PassKit
     
     func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
         if !successfulPayment {
-            let result = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Payment cancelledGamma")
+            let result = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Payment cancelled")
             commandDelegate.send(result, callbackId: paymentCallbackId)
         }
 
