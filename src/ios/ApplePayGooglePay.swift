@@ -84,7 +84,7 @@ import PassKit
     func paymentAuthorizationViewController(_ controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, handler completion: @escaping (PKPaymentAuthorizationResult) -> Void) {
         completion(PKPaymentAuthorizationResult(status: PKPaymentAuthorizationStatus.success, errors: nil))
         successfulPayment = true
-        let applePaymentString = String(data: payment.token.paymentData, encoding: .utf8)
+        let applePaymentString = String(data: payment, encoding: .utf8)
         applePaymentStringResult = applePaymentString
     }
     
