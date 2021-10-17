@@ -42,7 +42,9 @@ import PassKit
             request.merchantCapabilities = .capability3DS
             request.countryCode = countryCode
             request.currencyCode = currencyCode
-            
+            // request.requiredBillingContactFields = [.name, .postalAddress, .phoneNumber, .emailAddress]
+            // request.requiredShippingContactFields = [.name, .postalAddress, .phoneNumber, .emailAddress]
+
             let payPurpose = try getFromRequest(fromArguments: command.arguments, key: "purpose") as! String
             
             let amount = try getFromRequest(fromArguments: command.arguments, key: "amount") as! NSNumber
@@ -84,8 +86,39 @@ import PassKit
     func paymentAuthorizationViewController(_ controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, handler completion: @escaping (PKPaymentAuthorizationResult) -> Void) {
         completion(PKPaymentAuthorizationResult(status: PKPaymentAuthorizationStatus.success, errors: nil))
         successfulPayment = true
-        let applePaymentString = String(data: payment.token.paymentData, encoding: .utf8)
-        applePaymentStringResult = applePaymentString
+
+        let paymentDataDictionary: [AnyHashable: Any]? = try? JSONSerialization.jsonObject(with: payment.token.paymentData, options: .mutableContainers) as? [AnyHashable : Any]
+        var paymentType: String = "debit"
+
+        var paymentMethodDictionary: [AnyHashable: Any] = ["network": "", "type": paymentType, "displayName": ""]
+
+        if #available(iOS 9.0, *) {
+            paymentMethodDictionary = ["network": payment.token.paymentMethod.network ?? "", "type": paymentType, "displayName": payment.token.paymentMethod.displayName ?? ""]
+
+            switch payment.token.paymentMethod.type {
+                case .debit:
+                    paymentType = "debit"
+                case .credit:
+                    paymentType = "credit"
+                case .store:
+                    paymentType = "store"
+                case .prepaid:
+                    paymentType = "prepaid"
+                default:
+                    paymentType = "unknown"
+                }
+        }
+
+        let cryptogramDictionary: [AnyHashable: Any] = ["paymentData": paymentDataDictionary ?? "", "transactionIdentifier": payment.token.transactionIdentifier, "paymentMethod": paymentMethodDictionary]
+        let cardCryptogramPacketDictionary: [AnyHashable: Any] = cryptogramDictionary
+        let cardCryptogramPacketData: Data? = try? JSONSerialization.data(withJSONObject: cardCryptogramPacketDictionary, options: [])
+
+        // in cardCryptogramPacketString we now have all necessary data which demand most of bank gateways to process the payment
+        let cardCryptogramPacketString = String(data: cardCryptogramPacketData!, encoding: .utf8)
+
+        // let applePaymentString = String(data: payment.token.paymentData, encoding: .utf8)
+
+        applePaymentStringResult = cardCryptogramPacketString
     }
     
     func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
