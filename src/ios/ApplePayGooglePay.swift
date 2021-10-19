@@ -132,6 +132,9 @@ import PassKit
             commandDelegate.send(result, callbackId: paymentCallbackId)
         }
 
+        // reassign back
+        successfulPayment = false
+
         controller.dismiss(animated: true, completion: nil)
     }
 }
