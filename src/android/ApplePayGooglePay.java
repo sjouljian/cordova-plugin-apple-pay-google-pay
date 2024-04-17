@@ -143,8 +143,8 @@ public class ApplePayGooglePay extends CordovaPlugin {
             /*paymentDataRequest.put("merchantInfo",
                     new JSONObject()
                             .put("merchantName", gpMerchantName)
-                            .put("merchantId", gpMerchantId)*/
-            );
+                            .put("merchantId", gpMerchantId)
+            );*/
 
 
             String requestJson = paymentDataRequest.toString();
