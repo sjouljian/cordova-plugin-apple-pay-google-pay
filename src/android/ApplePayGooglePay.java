@@ -133,17 +133,17 @@ public class ApplePayGooglePay extends CordovaPlugin {
 
             String gateway = getParam(argss, "gateway");
             String merchantId = getParam(argss, "merchantId");
-            String gpMerchantId = getParam(argss, "gpMerchantId");
-            String gpMerchantName = getParam(argss, "gpMerchantName");
+            //String gpMerchantId = getParam(argss, "gpMerchantId");
+            //String gpMerchantName = getParam(argss, "gpMerchantName");
 
             JSONObject paymentDataRequest = getBaseRequest();
             paymentDataRequest.put(
                     "allowedPaymentMethods", new JSONArray().put(getCardPaymentMethod(gateway, merchantId)));
             paymentDataRequest.put("transactionInfo", getTransactionInfo(price, currencyCode, countryCode));
-            paymentDataRequest.put("merchantInfo",
+            /*paymentDataRequest.put("merchantInfo",
                     new JSONObject()
                             .put("merchantName", gpMerchantName)
-                            .put("merchantId", gpMerchantId)
+                            .put("merchantId", gpMerchantId)*/
             );
 
 
